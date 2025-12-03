@@ -1,122 +1,73 @@
-export const config = {
-  runtime: "edge",
-};
-
-const TIKWM_API = "https://www.tikwm.com/api/?url=";
-
-export default async function handler(req) {
+export default async function handler(req, res) {
   try {
-    const { searchParams } = new URL(req.url);
-    const url = searchParams.get("url");
+    const url =
+      (req.method === "GET" ? req.query.url : req.body?.url) ||
+      req.query.url;
 
     if (!url) {
-      return new Response(
-        JSON.stringify({ ok: false, error: "Parameter 'url' wajib." }),
-        { status: 400 }
-      );
+      return res.status(400).json({
+        ok: false,
+        error: "Parameter 'url' wajib diisi."
+      });
     }
 
-    const apiUrl = TIKWM_API + encodeURIComponent(url);
+    const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(
+      url
+    )}`;
 
-    let apiRes;
+    let response;
     try {
-      apiRes = await fetch(apiUrl, {
+      response = await fetch(apiUrl, {
         headers: {
-          "User-Agent": "Mozilla/5.0",
-          Accept: "application/json",
+          "User-Agent": "Mozilla/5.0"
         },
-        cache: "no-cache",
+        timeout: 15000
       });
     } catch (e) {
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          error: "Tidak bisa terhubung ke provider.",
-        }),
-        { status: 502 }
-      );
+      return res.status(502).json({
+        ok: false,
+        error: "Gagal terhubung ke TikWM (timeout / blokir)."
+      });
     }
 
-    let json;
-    try {
-      json = await apiRes.json();
-    } catch (e) {
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          error: "Provider mengirim respon invalid.",
-        }),
-        { status: 502 }
-      );
+    const json = await response.json().catch(() => null);
+
+    if (!json || !json.data) {
+      return res.status(502).json({
+        ok: false,
+        error: "Provider mengembalikan data kosong / tidak valid."
+      });
     }
 
-    const payload = json?.data || json;
-    if (!payload) {
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          error: "Respon provider kosong.",
-        }),
-        { status: 502 }
-      );
-    }
+    const d = json.data;
 
-    const normalize = {
-      id: payload.id || payload.aweme_id || null,
-      author:
-        payload.author?.unique_id ||
-        payload.author?.nickname ||
-        payload.author_name ||
-        null,
-      nickname:
-        payload.author?.nickname ||
-        payload.author_name ||
-        null,
-      title: payload.desc || payload.title || "",
-      date: payload.create_time
-        ? new Date(payload.create_time * 1000).toISOString().slice(0, 10)
-        : null,
-      cover:
-        payload.cover ||
-        payload.video_cover ||
-        payload.music_cover ||
-        null,
-      video:
-        payload.play ||
-        payload.no_watermark ||
-        payload.video ||
-        payload.play_addr ||
-        null,
-      video_hd: payload.hdplay || payload.play_hd || null,
-      audio:
-        payload.music?.play ||
-        payload.music?.play_addr ||
-        payload.music ||
-        null,
-      raw: payload,
+    const payload = {
+      id: d.id || d.aweme_id,
+      author: d.author?.unique_id || d.author?.nickname || "Unknown",
+      title: d.title || d.desc || "",
+      date: d.created || "",
+      cover: d.cover || d.video_cover,
+      video: d.play || d.no_watermark,
+      video_hd: d.hdplay || null,
+      audio: d.music || null
     };
 
-    if (!normalize.video) {
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          error: "Provider tidak mengembalikan link video.",
-        }),
-        { status: 502 }
-      );
+    if (!payload.video) {
+      return res.status(502).json({
+        ok: false,
+        error: "Provider tidak mengembalikan URL video."
+      });
     }
 
-    return new Response(JSON.stringify({ ok: true, result: normalize }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-      },
+    return res.status(200).json({
+      ok: true,
+      result: payload
     });
-  } catch (err) {
-    return new Response(
-      JSON.stringify({ ok: false, error: "Internal server error." }),
-      { status: 500 }
-    );
+
+  } catch (e) {
+    return res.status(500).json({
+      ok: false,
+      error: "Server error (internal)."
+    });
   }
 }
