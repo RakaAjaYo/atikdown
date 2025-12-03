@@ -12,16 +12,26 @@ export default async function handler(req, res) {
 
     const data = resp.data?.data || resp.data;
 
-    if (!data) return res.status(500).json({ error: "Video tidak ditemukan" });
+    if (!data) {
+      return res.status(200).json({ error: "Video tidak ditemukan" });
+    }
 
-    // Ambil video no watermark fallback
-    let videoUrl = data.video?.no_watermark || data.video?.play_addr || data.video?.wm || null;
-    let audioUrl = data.audio || null;
-    let title = data.title || "Unknown";
-    let author = data.author?.nickname || data.author || "Unknown";
-    let thumbnail = data.video?.cover || data.cover || "";
+    // Cek fallback semua kemungkinan field video
+    const videoUrl = data.video?.no_watermark
+                  || data.video?.play_addr
+                  || data.video?.wm
+                  || data.video?.url
+                  || null;
 
-    if (!videoUrl) return res.status(500).json({ error: "Video tidak ditemukan" });
+    const audioUrl = data.audio || null;
+    const thumbnail = data.video?.cover || data.cover || "";
+    const title = data.title || "Unknown";
+    const author = data.author?.nickname || data.author || "Unknown";
+    const duration = data.video?.duration || "Unknown";
+
+    if (!videoUrl) {
+      return res.status(200).json({ error: "Video tidak ditemukan" });
+    }
 
     res.status(200).json({
       title,
@@ -29,11 +39,11 @@ export default async function handler(req, res) {
       thumbnail,
       video: videoUrl,
       audio: audioUrl,
-      duration: data.video?.duration || "Unknown"
+      duration
     });
 
   } catch (err) {
-    console.error("Error Tikwm API:", err.message, err.response?.data);
-    res.status(500).json({ error: "Gagal fetch dari Tikwm" });
+    console.error("Tikwm API Error:", err.response?.data || err.message);
+    res.status(200).json({ error: "Gagal mengambil data dari Tikwm. Coba lagi nanti." });
   }
-}
+  }
