@@ -1,8 +1,11 @@
 {
-  "name": "tiktok-downloader",
+  "name": "atikdown-vercel",
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "start": "vercel dev"
+  },
   "dependencies": {
-    "axios": "latest"
+    "axios": "^1.5.0"
   }
 }
