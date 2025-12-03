@@ -1,40 +1,44 @@
-export default async function handler(req, res) {
-  let { url } = req.query;
-  if (!url) return res.status(400).json({ error: "URL TikTok dibutuhkan" });
+async function previewVideo() {
+  const url = document.getElementById("tiktokUrl").value.trim();
+  if (!url) return alert("Masukkan link TikTok!");
 
-  // Resolve shortlink jika mobile
-  if (url.includes("vt.tiktok.com") || url.includes("vm.tiktok.com")) {
-    url = await resolveShortLink(url);
-  }
+  const resultContainer = document.getElementById("result");
+  resultContainer.innerHTML = "<p>Loading preview...</p>";
 
   try {
-    const resp = await axios.get(
-      `https://tikwm.com/api?url=${encodeURIComponent(url)}`,
-      { headers: { "User-Agent": "Mozilla/5.0" } }
-    );
+    // Panggil backend preview.js
+    const res = await fetch(`/api/preview?url=${encodeURIComponent(url)}`);
+    const data = await res.json();
 
-    const data = resp.data?.data || resp.data;
+    // Handle error dari backend
+    if (!res.ok || data.error) {
+      resultContainer.innerHTML = `<p style="color:red;">${data.error || "Gagal mendapatkan preview"}</p>`;
+      return;
+    }
 
-    if (!data) return res.status(200).json({ error: "Video tidak ditemukan" });
+    if (!data.video) {
+      resultContainer.innerHTML = `<p style="color:red;">Video tidak ditemukan</p>`;
+      return;
+    }
 
-    const videoUrl = data.video?.no_watermark
-                   || data.video?.play_addr
-                   || data.video?.wm
-                   || data.video?.url
-                   || (data.itemInfos?.video?.urls ? data.itemInfos.video.urls[0] : null);
-
-    const audioUrl = data.audio || null;
-    const thumbnail = data.video?.cover || data.cover || "";
-    const title = data.title || "Unknown";
-    const author = data.author?.nickname || data.author || "Unknown";
-    const duration = data.video?.duration || "Unknown";
-
-    if (!videoUrl) return res.status(200).json({ error: "Video tidak ditemukan" });
-
-    res.status(200).json({ title, author, thumbnail, video: videoUrl, audio: audioUrl, duration });
-
+    // Render preview card
+    resultContainer.innerHTML = `
+      <div class="preview-card">
+        <img src="${data.thumbnail}" alt="Thumbnail" class="thumbnail">
+        <div class="video-info">
+          <h3>${data.title}</h3>
+          <p>Author: ${data.author}</p>
+          <p>Duration: ${data.duration}</p>
+        </div>
+        <video src="${data.video}" controls></video>
+        <div class="download-buttons">
+          <a href="${data.video}" download class="download-btn">Download Video</a>
+          ${data.audio ? `<a href="${data.audio}" download class="download-btn">Download Audio</a>` : ""}
+        </div>
+      </div>
+    `;
   } catch (err) {
-    console.error("Tikwm API Error:", err.response?.data || err.message);
-    res.status(200).json({ error: "Gagal mengambil data dari Tikwm. Coba lagi nanti." });
+    console.error("Preview error:", err);
+    resultContainer.innerHTML = `<p style="color:red;">Terjadi kesalahan, coba lagi nanti.</p>`;
   }
 }
