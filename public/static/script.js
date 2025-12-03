@@ -6,17 +6,14 @@ async function previewVideo() {
   resultContainer.innerHTML = "<p>Loading preview...</p>";
 
   try {
-    // Panggil backend preview.js
     const res = await fetch(`/api/preview?url=${encodeURIComponent(url)}`);
     const data = await res.json();
 
-    // Handle error dari backend
     if (!res.ok || data.error) {
       resultContainer.innerHTML = `<p style="color:red;">${data.error || "Gagal mendapatkan preview"}</p>`;
       return;
     }
 
-    // Pilih video HD jika tersedia, fallback ke video biasa
     const videoUrl = data.video_hd || data.video;
 
     if (!videoUrl) {
@@ -24,7 +21,7 @@ async function previewVideo() {
       return;
     }
 
-    // Render preview card
+    // Render preview tanpa video player
     resultContainer.innerHTML = `
       <div class="preview-card">
         <img src="${data.cover}" alt="Thumbnail" class="thumbnail">
@@ -33,7 +30,6 @@ async function previewVideo() {
           <p>Author: ${data.author}</p>
           <p>Date: ${data.date}</p>
         </div>
-        <video src="${videoUrl}" controls></video>
         <div class="download-buttons">
           <a href="${videoUrl}" download class="download-btn">Download Video</a>
           ${data.audio ? `<a href="${data.audio}" download class="download-btn">Download Audio</a>` : ""}
