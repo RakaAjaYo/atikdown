@@ -1,148 +1,96 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+/* Reset & basic */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 body {
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    background: linear-gradient(135deg, #0d47a1, #1565c0, #2196f3);
-    background-size: 300% 300%;
-    animation: gradientMove 6s ease infinite;
-    color: white;
-    transition: 0.3s;
+  background: #f9f9f9;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-body.dark {
-    background: #0d1117;
-    color: white;
+/* Top banner */
+#top-ads {
+  width: 100%;
+  background: #fff;
+  text-align: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
 }
 
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* Popup / navbar ads */
+#popup-ads {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  width: 300px;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+  padding: 10px;
+  display: none; /* muncul via JS */
 }
 
+/* Bottom banner */
+#bottom-ads {
+  width: 100%;
+  background: #fff;
+  text-align: center;
+  padding: 10px 0;
+  border-top: 1px solid #ddd;
+  margin-top: auto;
+}
+
+/* Container utama */
 .container {
-    max-width: 480px;
-    margin: auto;
-    padding: 20px;
+  flex: 1;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
 }
 
-.title {
-    text-align: center;
-    font-size: 36px;
-    font-weight: 700;
+/* Input & tombol */
+input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 16px;
 }
 
-.input-box {
-    display: flex;
-    gap: 10px;
+button {
+  width: 100%;
+  padding: 12px;
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.input-box input {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    outline: none;
+button:hover {
+  background: #357ab7;
 }
 
-.input-box button {
-    background: #00e676;
-    border: none;
-    padding: 12px;
-    border-radius: 10px;
-    font-weight: 700;
+/* Hasil video */
+#result {
+  margin-top: 20px;
 }
 
-.tool-btns {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
-}
-
-.tool-btns button {
-    flex: 1;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-}
-
-.preview-card {
-    margin-top: 20px;
-    background: rgba(255,255,255,0.16);
-    padding: 16px;
-    border-radius: 15px;
-    backdrop-filter: blur(6px);
-}
-
-.thumb {
-    width: 100%;
-    border-radius: 12px;
-    margin-bottom: 10px;
-}
-
-.dl-box {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.dl-btn {
-    padding: 12px;
-    border-radius: 10px;
-    text-align: center;
-    font-weight: 700;
-    color: white;
-    text-decoration: none;
-}
-
-.green { background: #00c853; }
-.blue  { background: #2979ff; }
-.purple { background: #9c27b0; }
-.red { background: #ff1744; }
-
-.fade {
-    animation: fadeIn 0.6s ease;
-}
-
-@keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(10px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-/* Loading */
-#loading {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    z-index: 99;
-    backdrop-filter: blur(3px);
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.spinner {
-    width: 45px;
-    height: 45px;
-    border: 5px solid #fff;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 0.9s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Mode button */
-.mode-toggle {
-    position: fixed;
-    top: 14px;
-    right: 14px;
-    background: rgba(255,255,255,0.4);
-    padding: 10px;
-    border-radius: 50%;
-    cursor: pointer;
+#result video {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
 }
