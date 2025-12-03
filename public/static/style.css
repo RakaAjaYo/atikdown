@@ -14,31 +14,16 @@ body {
   min-height: 100vh;
 }
 
-/* Top banner */
-#top-ads {
+/* Banner ads */
+#top-ads, #bottom-ads {
   width: 100%;
   background-color: #fff;
   text-align: center;
   padding: 10px 0;
-  border-bottom: 1px solid #ddd;
-}
-
-/* Popup / navbar ads */
-#popup-ads {
-  position: fixed;
-  top: 80px;
-  right: 20px;
-  width: 300px;
-  background: #fff;
   border: 1px solid #ddd;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 1000;
-  padding: 10px;
-  display: none; /* muncul via JS */
-  border-radius: 8px;
 }
 
-/* Container utama */
+/* Main container */
 .container {
   flex: 1;
   max-width: 600px;
@@ -57,7 +42,7 @@ body {
   text-align: center;
 }
 
-/* Input TikTok URL */
+/* Input & button */
 input[type="text"] {
   width: 100%;
   padding: 12px 15px;
@@ -67,13 +52,10 @@ input[type="text"] {
   margin-bottom: 15px;
   transition: 0.3s;
 }
-
 input[type="text"]:focus {
   border-color: #4a90e2;
   outline: none;
 }
-
-/* Tombol Download */
 button {
   width: 100%;
   padding: 12px;
@@ -85,54 +67,11 @@ button {
   cursor: pointer;
   transition: 0.3s;
 }
-
 button:hover {
   background-color: #357ab7;
 }
 
-/* Hasil video */
-#result {
-  margin-top: 20px;
-}
-
-#result h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-#result video {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 10px;
-}
-
-/* Bottom banner */
-#bottom-ads {
-  width: 100%;
-  background-color: #fff;
-  text-align: center;
-  padding: 10px 0;
-  border-top: 1px solid #ddd;
-  margin-top: auto;
-}
-
-/* Responsive adjustments */
-@media screen and (max-width: 640px) {
-  .container {
-    margin: 10px;
-    padding: 15px;
-  }
-
-  #popup-ads {
-    width: 250px;
-  }
-
-  button, input[type="text"] {
-    font-size: 14px;
-  }
-  }
-
+/* Preview card */
 .preview-card {
   background: #fff;
   border-radius: 12px;
@@ -140,28 +79,28 @@ button:hover {
   padding: 15px;
   margin-top: 20px;
 }
-
 .preview-card .thumbnail {
   width: 100%;
   border-radius: 12px;
   margin-bottom: 10px;
 }
-
 .preview-card .video-info h3 {
   margin: 5px 0;
   font-size: 18px;
 }
-
 .preview-card .video-info p {
   margin: 0;
   color: #555;
   font-size: 14px;
 }
-
+.preview-card video {
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
+}
 .download-buttons {
   margin-top: 10px;
 }
-
 .download-btn {
   display: inline-block;
   margin-right: 10px;
@@ -172,7 +111,17 @@ button:hover {
   text-decoration: none;
   transition: 0.3s;
 }
-
 .download-btn:hover {
   background: #357ab7;
+}
+
+/* Responsive */
+@media screen and (max-width: 640px) {
+  .container {
+    margin: 10px;
+    padding: 15px;
+  }
+  button, input[type="text"] {
+    font-size: 14px;
+  }
 }
