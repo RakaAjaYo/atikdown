@@ -1,85 +1,56 @@
-<!doctype html>
-<html lang="id">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ATIKDOWN — TikTok Downloader</title>
-  <meta name="description" content="Download video TikTok tanpa watermark. Fast & Simple.">
-  <meta property="og:title" content="ATIKDOWN - TikTok Downloader">
-  <link rel="stylesheet" href="/static/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Downloader</title>
+<link rel="stylesheet" href="static/style.css">
 </head>
-
 <body>
 
-  <!-- =============== TOP ADS =============== -->
-  <div class="ads ads-top">
-    <script async data-cfasync="false"
-      src="//pl28178951.effectivegatecpm.com/eb/13/9e/eb139e85cc3729f6f1f1a6de3c8f99c6.js"></script>
-  </div>
+<!-- Top banner -->
+<div id="top-ads">
+  <script type="text/javascript">
+  atOptions = {
+  	'key' : 'a289f44a1007c72db9cc40977192c5c8',
+  	'format' : 'iframe',
+  	'height' : 60,
+  	'width' : 468,
+  	'params' : {}
+  };
+</script>
+<script
+  type="text/javascript"
+  src="//www.highperformanceformat.com/a289f44a1007c72db9cc40977192c5c8/invoke.js"
+></script>
+</div>
 
-  <div class="container">
+<!-- Popup / navbar ads -->
+<div id="popup-ads">
+  <script
+  type="text/javascript"
+  src="//pl28179070.effectivegatecpm.com/d2/50/d2/d250d2605b94f8b79e2eebf02a09fb70.js"
+></script>
+</div>
 
-    <!-- Header -->
-    <header class="header">
-      <div class="logo">ATIKDOWN</div>
-      <div id="modeToggle" class="mode-toggle">🌙</div>
-    </header>
+<div class="container">
+  <h1 style="text-align:center; margin-bottom:20px;">TikTok Downloader</h1>
+  <input type="text" id="tiktokUrl" placeholder="Masukkan link TikTok">
+  <button onclick="downloadVideo()">Download</button>
 
-    <!-- Input Box -->
-    <h1 class="title">TikTok Downloader</h1>
+  <div id="result"></div>
+</div>
 
-    <div class="input-box">
-      <input id="url" placeholder="Tempel link TikTok di sini...">
-      <button id="btnFetch">Preview</button>
-    </div>
+<!-- Bottom banner -->
+<div id="bottom-ads">
+  <script
+  async="async"
+  data-cfasync="false"
+  src="//pl28178951.effectivegatecpm.com/b25a1addf81c0bd040177669b38f04c2/invoke.js"
+></script>
+<div id="container-b25a1addf81c0bd040177669b38f04c2"></div>
+</div>
 
-    <div class="tool-btns">
-      <button id="btnCopy">Copy URL</button>
-      <button id="btnClear">Clear</button>
-    </div>
-
-    <!-- =============== MIDDLE ADS =============== -->
-    <div class="ads ads-middle">
-      <script async data-cfasync="false"
-        src="//pl28178951.effectivegatecpm.com/eb/13/9e/eb139e85cc3729f6f1f1a6de3c8f99c6.js"></script>
-    </div>
-
-    <!-- Preview -->
-    <div id="preview" class="preview-card" style="display:none;">
-      <img id="thumbnail" class="thumb" src="" alt="thumbnail">
-
-      <div class="meta fade">
-        <div id="author" class="author">@username</div>
-        <div id="title" class="caption">Caption / Title</div>
-        <div id="date" class="date">Uploaded: -</div>
-      </div>
-
-      <div class="dl-box fade">
-        <a id="dlVideo" class="dl-btn green" download>Download Video</a>
-        <a id="dlVideoHD" class="dl-btn blue" download style="display:none;">Download HD</a>
-        <a id="dlAudio" class="dl-btn purple" download>Download Audio</a>
-        <button id="btnRemoveWM" class="dl-btn red">Remove Watermark (Sim)</button>
-      </div>
-
-      <!-- =============== BOTTOM ADS =============== -->
-      <div class="ads ads-bottom">
-        <script async data-cfasync="false"
-          src="//pl28178951.effectivegatecpm.com/eb/13/9e/eb139e85cc3729f6f1f1a6de3c8f99c6.js"></script>
-      </div>
-
-      <h4 class="history-title">Riwayat</h4>
-      <div id="history"></div>
-
-    </div>
-
-  </div>
-
-  <!-- Loading overlay -->
-  <div id="loading">
-    <div class="spinner"></div>
-  </div>
-
-  <script src="/static/script.js"></script>
-
+<script src="static/script.js"></script>
 </body>
 </html>
