@@ -1,60 +1,54 @@
 import axios from "axios";
 
-// Fungsi resolve shortlink vt.tiktok.com / vm.tiktok.com
-async function resolveShortLink(url) {
+// Fungsi format tanggal (dari timestamp TikTok)
+function formatDate(ts) {
   try {
-    const resp = await axios.get(url, {
-      maxRedirects: 0,
-      validateStatus: (status) => status >= 200 && status < 400,
-    });
-    if (resp.status === 301 || resp.status === 302) {
-      return resp.headers.location;
-    }
-    return url;
-  } catch (err) {
-    return url; // fallback ke URL asli
+    const date = new Date(ts * 1000); // TikTok timestamp biasanya dalam detik
+    const options = { day: "2-digit", month: "long", year: "numeric" };
+    return date.toLocaleDateString("id-ID", options);
+  } catch {
+    return "-";
   }
 }
 
 export default async function handler(req, res) {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: "URL TikTok dibutuhkan" });
+
   try {
-    let { url } = req.query;
-    if (!url) return res.status(400).json({ error: "URL TikTok dibutuhkan" });
-
-    // Resolve shortlink mobile
-    if (url.includes("vt.tiktok.com") || url.includes("vm.tiktok.com")) {
-      url = await resolveShortLink(url);
-    }
-
-    // Fetch Tikwm API
-    const resp = await axios.get(
-      `https://tikwm.com/api?url=${encodeURIComponent(url)}`,
-      { headers: { "User-Agent": "Mozilla/5.0" } }
+    // Request POST ke Tikwm
+    const r = await axios.post(
+      "https://tikwm.com/api/",
+      new URLSearchParams({ url }), // bentuk form-data
+      {
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
     );
 
-    const data = resp.data?.data || resp.data;
+    const data = r.data;
 
-    if (!data) return res.status(200).json({ error: "Video tidak ditemukan" });
+    if (!data || data.code !== 0 || !data.data) {
+      return res.status(200).json({ error: "Link tidak valid / video tidak ditemukan" });
+    }
 
-    // Ambil video fallback
-    const videoUrl = data.video?.no_watermark
-                   || data.video?.play_addr
-                   || data.video?.wm
-                   || data.video?.url
-                   || (data.itemInfos?.video?.urls ? data.itemInfos.video.urls[0] : null);
+    const d = data.data;
 
-    const audioUrl = data.audio || null;
-    const thumbnail = data.video?.cover || data.cover || "";
-    const title = data.title || "Unknown";
-    const author = data.author?.nickname || data.author || "Unknown";
-    const duration = data.video?.duration || "Unknown";
+    const videoData = {
+      cover: d.cover || "",
+      title: d.title || "-",
+      author: d.author?.unique_id || d.author || "-",
+      date: formatDate(d.create_time),
+      video: d.play || null,
+      video_hd: d.hdplay || null,
+      audio: d.music || null,
+    };
 
-    if (!videoUrl) return res.status(200).json({ error: "Video tidak ditemukan" });
-
-    res.status(200).json({ title, author, thumbnail, video: videoUrl, audio: audioUrl, duration });
-
+    return res.status(200).json(videoData);
   } catch (err) {
     console.error("Tikwm API Error:", err.response?.data || err.message);
-    res.status(200).json({ error: "Gagal mengambil data dari Tikwm. Coba lagi nanti." });
+    return res.status(200).json({ error: "Server error, coba lagi nanti." });
   }
-}
+      }
