@@ -1,37 +1,30 @@
 import axios from "axios";
 
 export default async function handler(req, res) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ message: "Method not allowed" });
-  }
-
   const { url } = req.query;
-
-  if (!url) return res.status(400).json({ message: "URL required" });
+  if (!url) return res.status(400).json({ error: "URL TikTok dibutuhkan" });
 
   try {
-    // Tikwm API
-    const response = await axios.get("https://api.tikwm.com/v1/video", {
-      params: {
-        url: url
-      },
-      headers: {
-        "User-Agent": "Mozilla/5.0"
-      }
+    const resp = await axios.get("https://tikwm.com/api?url=" + encodeURIComponent(url), {
+      headers: { "User-Agent": "Mozilla/5.0" }
     });
 
-    if (response.data && response.data.data) {
-      return res.status(200).json({
-        author: response.data.data.author.nickname,
-        title: response.data.data.title,
-        play: response.data.data.play,
-        video_no_watermark: response.data.data.video.no_watermark,
-        video_watermark: response.data.data.video.watermark
-      });
-    } else {
-      return res.status(500).json({ message: "Failed to fetch video" });
-    }
+    const data = resp.data.data || resp.data;
+
+    if (!data) return res.status(500).json({ error: "Video tidak ditemukan" });
+
+    // struktur preview
+    const preview = {
+      title: data.title || "Unknown",
+      author: data.author?.nickname || data.author || "Unknown",
+      thumbnail: data.video?.cover || data.cover || "",
+      video: data.video?.no_watermark || data.video?.watermark || "",
+      audio: data.audio || null
+    };
+
+    res.status(200).json(preview);
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    console.error(err.message);
+    res.status(500).json({ error: "Gagal fetch video" });
   }
-}
+      }
