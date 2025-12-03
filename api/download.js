@@ -1,16 +1,19 @@
-// api/download.js
+export const config = {
+  runtime: "edge",
+};
 
 const TIKWM_API = "https://www.tikwm.com/api/?url=";
 
-export default async function handler(req, res) {
+export default async function handler(req) {
   try {
-    const url = req.method === "GET" ? req.query.url : req.body?.url;
+    const { searchParams } = new URL(req.url);
+    const url = searchParams.get("url");
 
     if (!url) {
-      return res.status(400).json({
-        ok: false,
-        error: "Parameter 'url' wajib.",
-      });
+      return new Response(
+        JSON.stringify({ ok: false, error: "Parameter 'url' wajib." }),
+        { status: 400 }
+      );
     }
 
     const apiUrl = TIKWM_API + encodeURIComponent(url);
@@ -22,32 +25,40 @@ export default async function handler(req, res) {
           "User-Agent": "Mozilla/5.0",
           Accept: "application/json",
         },
+        cache: "no-cache",
       });
     } catch (e) {
-      console.error("Fetch provider error:", e);
-      return res.status(502).json({
-        ok: false,
-        error: "Gagal terhubung ke provider (TikWM).",
-      });
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          error: "Tidak bisa terhubung ke provider.",
+        }),
+        { status: 502 }
+      );
     }
 
     let json;
     try {
       json = await apiRes.json();
     } catch (e) {
-      return res.status(502).json({
-        ok: false,
-        error: "Gagal membaca respon provider.",
-      });
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          error: "Provider mengirim respon invalid.",
+        }),
+        { status: 502 }
+      );
     }
 
     const payload = json?.data || json;
     if (!payload) {
-      console.error("Empty provider payload:", json);
-      return res.status(502).json({
-        ok: false,
-        error: "Respon provider kosong.",
-      });
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          error: "Respon provider kosong.",
+        }),
+        { status: 502 }
+      );
     }
 
     const normalize = {
@@ -63,9 +74,7 @@ export default async function handler(req, res) {
         null,
       title: payload.desc || payload.title || "",
       date: payload.create_time
-        ? new Date(payload.create_time * 1000)
-            .toISOString()
-            .slice(0, 10)
+        ? new Date(payload.create_time * 1000).toISOString().slice(0, 10)
         : null,
       cover:
         payload.cover ||
@@ -78,10 +87,7 @@ export default async function handler(req, res) {
         payload.video ||
         payload.play_addr ||
         null,
-      video_hd:
-        payload.hdplay ||
-        payload.play_hd ||
-        null,
+      video_hd: payload.hdplay || payload.play_hd || null,
       audio:
         payload.music?.play ||
         payload.music?.play_addr ||
@@ -91,22 +97,26 @@ export default async function handler(req, res) {
     };
 
     if (!normalize.video) {
-      console.error("Missing video URL:", payload);
-      return res.status(502).json({
-        ok: false,
-        error: "Provider tidak mengembalikan link video.",
-      });
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          error: "Provider tidak mengembalikan link video.",
+        }),
+        { status: 502 }
+      );
     }
 
-    return res.status(200).json({
-      ok: true,
-      result: normalize,
+    return new Response(JSON.stringify({ ok: true, result: normalize }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store",
+      },
     });
   } catch (err) {
-    console.error("UNHANDLED ERROR:", err);
-    return res.status(500).json({
-      ok: false,
-      error: "Internal server error.",
-    });
+    return new Response(
+      JSON.stringify({ ok: false, error: "Internal server error." }),
+      { status: 500 }
+    );
   }
 }
