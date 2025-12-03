@@ -1,16 +1,12 @@
 async function previewVideo() {
   const url = document.getElementById("tiktokUrl").value.trim();
-  if (!url) {
-    alert("Masukkan link url...");
-    return;
-  }
+  if (!url) return alert("Masukkan link TikTok!");
 
   try {
     const res = await fetch(`/api/preview?url=${encodeURIComponent(url)}`);
     const data = await res.json();
 
     if (res.ok && data.video) {
-      // render preview menu mirip SSSTikTok
       document.getElementById("result").innerHTML = `
         <div class="preview-card">
           <img src="${data.thumbnail}" alt="Thumbnail" class="thumbnail">
@@ -28,8 +24,8 @@ async function previewVideo() {
     } else {
       alert("Gagal mendapatkan preview: " + (data.error || "Unknown error"));
     }
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error(err);
     alert("Terjadi kesalahan, coba lagi nanti.");
   }
 }
