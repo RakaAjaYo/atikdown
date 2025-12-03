@@ -3,6 +3,7 @@ async function previewVideo() {
   if (!url) return alert("Masukkan link TikTok!");
 
   try {
+    // Perbaikan typo di sini
     const res = await fetch(`/api/preview?url=${encodeURIComponent(url)}`);
     const data = await res.json();
 
