@@ -21,7 +21,6 @@ async function previewVideo() {
       return;
     }
 
-    // Render preview tanpa video player
     resultContainer.innerHTML = `
       <div class="preview-card">
         <img src="${data.cover}" alt="Thumbnail" class="thumbnail">
@@ -31,8 +30,8 @@ async function previewVideo() {
           <p>Date: ${data.date}</p>
         </div>
         <div class="download-buttons">
-          <a href="${videoUrl}" download class="download-btn">Download Video</a>
-          ${data.audio ? `<a href="${data.audio}" download class="download-btn">Download Audio</a>` : ""}
+          <a href="/api/download?url=${encodeURIComponent(videoUrl)}&type=video" class="download-btn">Download Video</a>
+          ${data.audio ? `<a href="/api/download?url=${encodeURIComponent(data.audio)}&type=audio" class="download-btn">Download Audio</a>` : ""}
         </div>
       </div>
     `;
