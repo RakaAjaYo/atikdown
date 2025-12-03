@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ATIKDOWN</title>
+
+    <!-- SEO -->
+    <meta name="description" content="Download video TikTok tanpa watermark, cepat & HD.">
+    <meta property="og:title" content="ATIKDOWN - TikTok Downloader" />
+    <meta property="og:description" content="Download video TikTok tanpa watermark GRATIS." />
+    <meta property="og:image" content="/static/logo.png" />
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div id="loading">
+    <div class="spinner"></div>
+    <p>Processing...</p>
+</div>
+
+<div class="mode-toggle" onclick="toggleMode()">🌙</div>
+
+<div class="container">
+
+    <h1 class="title">ATIKDOWN</h1>
+
+    <form method="POST" class="input-box" onsubmit="startLoading()">
+        <input id="urlInput" type="text" name="url" placeholder="Tempel link TikTok..." required>
+        <button type="submit">Download</button>
+    </form>
+
+    <div class="tool-btns">
+        <button onclick="copyURL()">Copy</button>
+        <button onclick="clearURL()">Clear</button>
+    </div>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if video %}
+    <div class="preview-card fade">
+
+        <img src="{{ video.cover }}" class="thumb">
+
+        <div class="info">
+            <p><b>@{{ video.author }}</b></p>
+            <p class="caption">{{ video.caption }}</p>
+            <p class="date">{{ video.date }}</p>
+        </div>
+
+        <div class="dl-box">
+            <a class="dl-btn green" href="{{ video.video }}" download="atikdown_id.mp4">Video SD</a>
+
+            {% if video.video_hd %}
+            <a class="dl-btn blue" href="{{ video.video_hd }}" download="atikdown_hd.mp4">Video HD</a>
+            {% endif %}
+
+            <a class="dl-btn purple" href="{{ video.audio }}" download="atikdown.mp3">Audio MP3</a>
+
+            <button class="dl-btn red" onclick="removeWM()">Remove Watermark</button>
+        </div>
+
+        <h3 class="history-title">Riwayat Link</h3>
+        <div id="history"></div>
+
+    </div>
+    {% endif %}
+
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+      </html>
