@@ -1,127 +1,123 @@
-/* Reset & basic styling */
+/* Reset dan dasar */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  background-color: #f4f4f9;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f8f8f8;
   color: #333;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
-/* Banner ads */
-#top-ads, #bottom-ads {
-  width: 100%;
-  background-color: #fff;
-  text-align: center;
-  padding: 10px 0;
-  border: 1px solid #ddd;
-}
-
-/* Main container */
+/* Container utama */
 .container {
-  flex: 1;
-  max-width: 600px;
-  margin: 20px auto;
+  max-width: 480px;
+  margin: 20px auto 40px auto;
+  background: #fff;
   padding: 20px;
-  background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
 }
 
-/* Heading */
-.container h1 {
-  font-size: 28px;
-  color: #4a90e2;
-  margin-bottom: 20px;
+/* Judul & subtitle */
+.title {
   text-align: center;
+  font-size: 28px;
+  margin-bottom: 4px;
 }
 
-/* Input & button */
-input[type="text"] {
-  width: 100%;
-  padding: 12px 15px;
-  border: 1px solid #ccc;
+.subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Input group */
+.input-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 16px;
-  margin-bottom: 15px;
-  transition: 0.3s;
+  font-size: 14px;
 }
-input[type="text"]:focus {
-  border-color: #4a90e2;
-  outline: none;
-}
-button {
-  width: 100%;
-  padding: 12px;
-  background-color: #4a90e2;
+
+.input-group button {
+  padding: 10px 16px;
+  background: #ff0050;
   color: #fff;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background 0.2s;
 }
-button:hover {
-  background-color: #357ab7;
+
+.input-group button:hover {
+  background: #e60044;
 }
 
 /* Preview card */
-.preview-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-  padding: 15px;
-  margin-top: 20px;
+#result .preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f1f1f1;
+  padding: 12px;
+  border-radius: 10px;
 }
-.preview-card .thumbnail {
+
+.preview-card img.thumbnail {
   width: 100%;
-  border-radius: 12px;
-  margin-bottom: 10px;
+  border-radius: 8px;
 }
+
 .preview-card .video-info h3 {
-  margin: 5px 0;
-  font-size: 18px;
-}
-.preview-card .video-info p {
   margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.preview-card .video-info p {
+  margin: 2px 0;
   color: #555;
   font-size: 14px;
 }
-.preview-card video {
-  width: 100%;
-  border-radius: 12px;
-  margin-top: 10px;
-}
+
+/* Download buttons */
 .download-buttons {
-  margin-top: 10px;
-}
-.download-btn {
-  display: inline-block;
-  margin-right: 10px;
-  padding: 10px 15px;
-  background: #4a90e2;
-  color: #fff;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: 0.3s;
-}
-.download-btn:hover {
-  background: #357ab7;
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
 }
 
-/* Responsive */
-@media screen and (max-width: 640px) {
-  .container {
-    margin: 10px;
-    padding: 15px;
-  }
-  button, input[type="text"] {
-    font-size: 14px;
-  }
+.download-buttons .download-btn {
+  flex: 1;
+  text-align: center;
+  background: #ff0050;
+  color: #fff;
+  padding: 8px 0;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.download-buttons .download-btn:hover {
+  background: #e60044;
+}
+
+/* Ads */
+.ad-banner {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
 }
