@@ -13,6 +13,7 @@ async function previewVideo() {
           <div class="video-info">
             <h3>${data.title}</h3>
             <p>Author: ${data.author}</p>
+            <p>Duration: ${data.duration}</p>
           </div>
           <video src="${data.video}" controls></video>
           <div class="download-buttons">
