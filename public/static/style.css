@@ -132,3 +132,47 @@ button:hover {
     font-size: 14px;
   }
   }
+
+.preview-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.preview-card .thumbnail {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.preview-card .video-info h3 {
+  margin: 5px 0;
+  font-size: 18px;
+}
+
+.preview-card .video-info p {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.download-buttons {
+  margin-top: 10px;
+}
+
+.download-btn {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 10px 15px;
+  background: #4a90e2;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.download-btn:hover {
+  background: #357ab7;
+}
