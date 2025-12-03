@@ -1,91 +1,60 @@
-// public/static/script.js
-async function fetchPreview(){
-  const input = document.getElementById('url');
-  const url = input.value.trim();
-  const previewEl = document.getElementById('preview');
-  const loadingEl = document.getElementById('loading');
-  const historyEl = document.getElementById('history');
-  const authorEl = document.getElementById('author');
-  const titleEl = document.getElementById('title');
-  const dateEl = document.getElementById('date');
-  const thumbnailEl = document.getElementById('thumbnail');
-  const dlVideo = document.getElementById('dlVideo');
-  const dlVideoHD = document.getElementById('dlVideoHD');
-  const dlAudio = document.getElementById('dlAudio');
+const input = document.getElementById("url");
+const preview = document.getElementById("preview");
+const loading = document.getElementById("loading");
+const player = document.getElementById("player");
 
-  if(!url){ alert('Masukkan link TikTok'); return; }
+const author = document.getElementById("author");
+const titleTxt = document.getElementById("title");
+const dateTxt = document.getElementById("date");
 
-  loadingEl.style.display = 'flex';
-  previewEl.style.display = 'none';
+const dlVideo = document.getElementById("dlVideo");
+const dlVideoHD = document.getElementById("dlVideoHD");
+const dlAudio = document.getElementById("dlAudio");
 
-  try{
-    const res = await fetch(`/api/download?url=${encodeURIComponent(url)}`, { method: 'GET' });
+document.getElementById("btnFetch").onclick = fetchData;
+document.getElementById("btnClear").onclick = () => {
+  input.value = "";
+  preview.style.display = "none";
+};
+
+async function fetchData() {
+  let url = input.value.trim();
+  if (!url) return alert("Tempel link TikTok dulu!");
+
+  loading.style.display = "flex";
+
+  try {
+    const res = await fetch(`/api/download?url=${encodeURIComponent(url)}`);
     const json = await res.json();
 
-    if(!res.ok || !json.ok){
-      // show friendly error in UI
-      const msg = json?.error || `Server returned ${res.status}`;
-      alert(`Error: ${msg}`);
-      console.error("API error:", json);
-      loadingEl.style.display = 'none';
+    if (!json.ok) {
+      alert(json.error || "Gagal memproses link.");
+      loading.style.display = "none";
       return;
     }
 
-    const r = json.result;
-    // populate UI safely
-    authorEl.textContent = r.author || r.nickname || '@unknown';
-    titleEl.textContent = r.title || '-';
-    dateEl.textContent = r.date ? `Uploaded: ${r.date}` : '';
-    thumbnailEl.src = r.cover || '';
+    const d = json.result;
 
-    // video links
-    if(r.video){ dlVideo.href = r.video; dlVideo.style.display='block'; } else dlVideo.style.display='none';
-    if(r.video_hd){ dlVideoHD.href = r.video_hd; dlVideoHD.style.display='block'; } else dlVideoHD.style.display='none';
-    if(r.audio){ dlAudio.href = r.audio; dlAudio.style.display='block'; } else dlAudio.style.display='none';
+    player.src = d.video;
+    author.textContent = "@" + d.author;
+    titleTxt.textContent = d.title;
+    dateTxt.textContent = "Upload: " + (d.date || "-");
 
-    // show preview area
-    previewEl.style.display = 'block';
-    // save history
-    saveHistory(url);
-  } catch(err){
-    console.error("Fetch preview failed:", err);
-    alert("Gagal memproses. Periksa koneksi atau coba lagi nanti.");
-  } finally {
-    loadingEl.style.display = 'none';
+    dlVideo.href = d.video;
+    dlAudio.href = d.audio;
+
+    if (d.video_hd) {
+      dlVideoHD.style.display = "block";
+      dlVideoHD.href = d.video_hd;
+    } else {
+      dlVideoHD.style.display = "none";
+    }
+
+    preview.style.display = "block";
+
+  } catch (e) {
+    alert("Gagal memuat data.");
   }
+
+  loading.style.display = "none";
 }
-    if(r.video){ dlVideo.href = r.video; dlVideo.style.display='block'; }
-    else dlVideo.style.display='none';
-
-    if(r.video_hd){ dlVideoHD.href = r.video_hd; dlVideoHD.style.display='block'; } else dlVideoHD.style.display='none';
-    if(r.audio){ dlAudio.href = r.audio; dlAudio.style.display='block'; } else dlAudio.style.display='none';
-
-    saveHistory(url);
-    showPreview(true);
-  } catch(err){
-    console.error(err);
-    alert('Terjadi kesalahan saat mengambil data.');
-  } finally{
-    showLoading(false);
-  }
-}
-
-// play overlay handling (show/hide overlay when playing)
-playOverlay?.addEventListener('click', ()=>{
-  if(player.paused) player.play(); else player.pause();
-});
-player?.addEventListener('play', ()=>{ playOverlay.style.display='none';});
-player?.addEventListener('pause', ()=>{ playOverlay.style.display='flex';});
-
-// remove watermark (simulated)
-function removeWM(){
-  alert('Fungsi Remove Watermark: simulasi. Untuk hasil nyata perlu backend/third-party service.');
-}
-
-// events & init
-document.getElementById('btnFetch').addEventListener('click', fetchPreview);
-document.getElementById('btnCopy').addEventListener('click', copyURL);
-document.getElementById('btnClear').addEventListener('click', clearURL);
-document.getElementById('btnHistoryClear')?.addEventListener('click', ()=>{ localStorage.removeItem('atikdown_history'); renderHistory(); });
-
-window.addEventListener('load', ()=>{ renderHistory(); });
