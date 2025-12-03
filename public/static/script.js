@@ -16,7 +16,10 @@ async function previewVideo() {
       return;
     }
 
-    if (!data.video) {
+    // Pilih video HD jika tersedia, fallback ke video biasa
+    const videoUrl = data.video_hd || data.video;
+
+    if (!videoUrl) {
       resultContainer.innerHTML = `<p style="color:red;">Video tidak ditemukan</p>`;
       return;
     }
@@ -24,15 +27,15 @@ async function previewVideo() {
     // Render preview card
     resultContainer.innerHTML = `
       <div class="preview-card">
-        <img src="${data.thumbnail}" alt="Thumbnail" class="thumbnail">
+        <img src="${data.cover}" alt="Thumbnail" class="thumbnail">
         <div class="video-info">
           <h3>${data.title}</h3>
           <p>Author: ${data.author}</p>
-          <p>Duration: ${data.duration}</p>
+          <p>Date: ${data.date}</p>
         </div>
-        <video src="${data.video}" controls></video>
+        <video src="${videoUrl}" controls></video>
         <div class="download-buttons">
-          <a href="${data.video}" download class="download-btn">Download Video</a>
+          <a href="${videoUrl}" download class="download-btn">Download Video</a>
           ${data.audio ? `<a href="${data.audio}" download class="download-btn">Download Audio</a>` : ""}
         </div>
       </div>
