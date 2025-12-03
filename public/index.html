@@ -1,0 +1,88 @@
+<!-- public/index.html -->
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ATIKDOWN — TikTok Downloader</title>
+  <meta name="description" content="Download video TikTok tanpa watermark. Fast & simple.">
+  <meta property="og:title" content="ATIKDOWN - TikTok Downloader">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- TOP AD (Adsterra) -->
+  <div class="ads ads-top">
+    <!-- REPLACE with your Adsterra top ad script -->
+    <script type="text/javascript" src="//adsterra_top_ads_placeholder.js"></script>
+  </div>
+
+  <div class="wrap">
+    <header class="header">
+      <div class="logo">ATIKDOWN</div>
+      <div class="mode-toggle" id="modeToggle" title="Toggle dark mode">🌙</div>
+    </header>
+
+    <main class="card">
+      <h1 class="headline">TikTok Downloader</h1>
+
+      <form id="form" class="form">
+        <input id="url" class="input-url" placeholder="Tempel link TikTok di sini..." autocomplete="off" />
+        <div class="row">
+          <button id="btnFetch" class="btn primary" type="button">Preview</button>
+          <button id="btnClear" class="btn ghost" type="button">Clear</button>
+        </div>
+      </form>
+
+      <div class="tools">
+        <button id="btnCopy" class="btn small">Copy URL</button>
+        <button id="btnHistoryClear" class="btn small ghost">Clear History</button>
+      </div>
+
+      <!-- MIDDLE AD (Adsterra) -->
+      <div class="ads ads-middle">
+        <script type="text/javascript" src="//adsterra_middle_ads_placeholder.js"></script>
+      </div>
+
+      <div id="preview" class="preview" style="display:none">
+        <div class="preview-media">
+          <div class="video-wrap">
+            <!-- custom player: no native download menu -->
+            <video id="player" playsinline controlsList="nodownload noplaybackrate" oncontextmenu="return false;"></video>
+            <button id="playOverlay" class="play-overlay" aria-hidden="true"></button>
+          </div>
+        </div>
+
+        <div class="meta">
+          <div class="author" id="author">@username</div>
+          <div class="title" id="title">Caption / Title</div>
+          <div class="date" id="date">Uploaded: -</div>
+        </div>
+
+        <div class="actions">
+          <a id="dlVideo" class="btn primary full" download>Download Video</a>
+          <a id="dlVideoHD" class="btn secondary full" download style="display:none">Download HD</a>
+          <a id="dlAudio" class="btn accent full" download>Download Audio</a>
+          <button id="btnRemoveWM" class="btn ghost full">Remove Watermark (Sim)</button>
+        </div>
+
+        <!-- BOTTOM AD -->
+        <div class="ads ads-bottom">
+          <script type="text/javascript" src="//adsterra_bottom_ads_placeholder.js"></script>
+        </div>
+
+        <h4 class="history-title">Riwayat</h4>
+        <div id="history" class="history"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Loading overlay -->
+  <div id="loading" class="loading" style="display:none">
+    <div class="spinner"></div>
+    <div class="loading-text">Memproses...</div>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+  </html>
