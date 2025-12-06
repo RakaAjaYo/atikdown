@@ -1,76 +1,44 @@
 async function previewVideo() {
-  const url = document.getElementById("tiktokUrl").value.trim();
-  if (!url) return alert("Masukkan link terlebih dahulu!");
+  const input = document.getElementById("url").value;
 
-  const resultContainer = document.getElementById("result");
-  resultContainer.innerHTML = "<p>Loading preview...</p>";
+  if (!input) return alert("Masukkan URL!");
 
-  try {
-    const res = await fetch(`/api/preview?url=${encodeURIComponent(url)}`);
-    const data = await res.json();
+  const res = await fetch(`/api/preview?url=${encodeURIComponent(input)}`);
+  const data = await res.json();
 
-    if (!res.ok || data.error) {
-      resultContainer.innerHTML =
-        `<p style="color:red;">${data.error || "Gagal memuat data"}</p>`;
-      return;
-    }
+  if (!res.ok) return alert(data.error);
 
-    const videoUrl = data.video_hd || data.video;
-    if (!videoUrl) {
-      resultContainer.innerHTML = `<p style="color:red;">Video tidak ditemukan</p>`;
-      return;
-    }
+  document.getElementById("preview").innerHTML = `
+    <img src="${data.cover}" style="width:100%;border-radius:10px;">
+    <h3>${data.title}</h3>
 
-    resultContainer.innerHTML = `
-      <div class="preview-card">
-        <img src="${data.cover}" class="thumbnail">
-        <div class="video-info">
-          <h3>${data.title}</h3>
-          <p>@${data.author}</p>
-          <p>${data.date}</p>
-        </div>
-
-        <div class="download-buttons">
-          <a class="download-btn"
-             href="/api/download?url=${encodeURIComponent(videoUrl)}&type=video">
-             Download Video</a>
-
-          <a class="download-btn"
-             href="/api/download?url=${encodeURIComponent(data.audio)}&type=audio">
-             Download Audio</a>
-        </div>
-      </div>
-    `;
-  } catch (err) {
-    console.error(err);
-    resultContainer.innerHTML = `<p style="color:red;">Terjadi kesalahan.</p>`;
-  }
+    <button onclick="downloadFile('video','${data.video}')">Download Video</button>
+    <button onclick="downloadFile('audio','${data.audio}')">Download Audio</button>
+  `;
 }
 
+async function downloadFile(type, url) {
+  window.location.href = `/api/download?type=${type}&url=${encodeURIComponent(url)}`;
+}
 
-async function payDonation() {
+async function donateNow() {
+  const name = document.getElementById("donateName").value;
   const amount = document.getElementById("donateAmount").value;
-  if (!amount || amount < 2000) return alert("Minimal donasi adalah 2000");
 
-  try {
-    const res = await fetch("/api/donate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount })
-    });
+  const res = await fetch("/api/donate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name, amount })
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (!data.success) {
-      alert(data.message || "Gagal membuat pembayaran");
-      return;
-    }
-
-    // redirect ke QRIS pakasir
-    window.location.href = data.payment_url;
-
-  } catch (err) {
-    console.error("Donate error:", err);
-    alert("Terjadi kesalahan server");
+  if (!res.ok) {
+    alert(data.error);
+    return;
   }
-}
+
+  window.location.href = data.pay_url;
+      }
