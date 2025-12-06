@@ -53,7 +53,7 @@ async function payDonation() {
   if (!amount || amount < 2000) return alert("Minimal donasi adalah 2000");
 
   try {
-    const res = await fetch("/api/donate/", {
+    const res = await fetch("/api/donate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount })
