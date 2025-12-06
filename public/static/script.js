@@ -36,29 +36,32 @@ async function previewVideo() {
 }
 
 async function payDonation() {
-  const amount = document.getElementById("donateAmount").value;
+  const name = document.getElementById("donateName").value.trim();
+  const amount = document.getElementById("donateAmount").value.trim();
 
-  if (!amount || amount < 2000) {
-    return alert("Minimal donasi 2000");
-  }
+  if (!name) return alert("Nama wajib diisi.");
+  if (!amount || amount < 2000) return alert("Minimal donasi 2000");
 
   try {
     const res = await fetch("/api/donate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount })
+      body: JSON.stringify({ name, amount })
     });
 
     const data = await res.json();
 
-    if (!data.success) {
+    if (!res.ok || !data.success) {
+      console.log(data);
       alert(data.error || "Gagal membuat pembayaran");
       return;
     }
 
+    // Redirect ke QRIS
     window.location.href = data.payment_url;
 
   } catch (err) {
-    alert("Server error donasi");
+    console.error("Donate error:", err);
+    alert("Fetch failed — API tidak bisa dijangkau.");
   }
 }
