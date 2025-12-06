@@ -1,31 +1,43 @@
 async function previewVideo() {
-  const input = document.getElementById("url").value;
+  const input = document.getElementById("url").value.trim();
 
   if (!input) return alert("Masukkan URL!");
 
-  const res = await fetch(`/api/preview?url=${encodeURIComponent(input)}`);
-  const data = await res.json();
+  document.getElementById("preview").innerHTML = "Loading...";
 
-  if (!res.ok) return alert(data.error);
+  try {
+    const res = await fetch(`/api/preview?url=${encodeURIComponent(input)}`);
+    const data = await res.json();
 
-  document.getElementById("preview").innerHTML = `
-    <img src="${data.cover}" style="width:100%;border-radius:10px;">
-    <h3>${data.title}</h3>
+    if (!res.ok || data.error) {
+      return document.getElementById("preview").innerHTML =
+        `<p style="color:red;">${data.error || "Gagal memuat preview"}</p>`;
+    }
 
-    <button onclick="downloadFile('video','${data.video}')">Download Video</button>
-    <button onclick="downloadFile('audio','${data.audio}')">Download Audio</button>
-  `;
+    document.getElementById("preview").innerHTML = `
+      <img src="${data.cover}" style="width:100%;border-radius:10px;">
+      <h3>${data.title}</h3>
+
+      <button onclick="downloadFile('video','${data.video}')">Download Video</button>
+      <button onclick="downloadFile('audio','${data.audio}')">Download Audio</button>
+    `;
+  } catch (err) {
+    console.error("Preview error:", err);
+    document.getElementById("preview").innerHTML =
+      `<p style="color:red;">Server error saat preview.</p>`;
+  }
 }
 
-async function downloadFile(type, url) {
-  window.location.href = `/api/download?type=${type}&url=${encodeURIComponent(url)}`;
+function downloadFile(type, url) {
+  window.location.href =
+    `/api/download?type=${type}&url=${encodeURIComponent(url)}`;
 }
 
 async function payDonation() {
   const amount = document.getElementById("donateAmount").value;
 
   if (!amount || amount < 2000) {
-    alert("Minimal donasi adalah 2000");
+    alert("Minimal donasi 2000");
     return;
   }
 
@@ -39,16 +51,14 @@ async function payDonation() {
     const data = await res.json();
 
     if (!res.ok || !data.success) {
-      console.error(data);
       alert(data.error || "Gagal membuat pembayaran");
       return;
     }
 
-    // redirect ke QRIS pakasir
     window.location.href = data.payment_url;
 
   } catch (err) {
     console.error("Donate error:", err);
-    alert("Server error.");
+    alert("Server error saat membuat pembayaran.");
   }
 }
