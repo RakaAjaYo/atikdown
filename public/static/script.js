@@ -35,33 +35,32 @@ async function previewVideo() {
   }
 }
 
-async function payDonation() {
-  const name = document.getElementById("donateName").value.trim();
-  const amount = document.getElementById("donateAmount").value.trim();
+const form = document.getElementById("donateForm");
+const resultDiv = document.getElementById("result");
 
-  if (!name) return alert("Nama wajib diisi.");
-  if (!amount || amount < 2000) return alert("Minimal donasi 2000");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const donorName = document.getElementById("donorName").value;
+  const amount = document.getElementById("amount").value;
+
+  resultDiv.innerHTML = "Membuat QRIS...";
 
   try {
-    const res = await fetch("/api/donate", {
+    const res = await fetch("/api/createPayment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, amount })
+      body: JSON.stringify({ donorName, amount })
     });
 
     const data = await res.json();
 
-    if (!res.ok || !data.success) {
-      console.log(data);
-      alert(data.error || "Gagal membuat pembayaran");
-      return;
+    if (res.ok) {
+      resultDiv.innerHTML = `<p>Scan QR berikut untuk bayar:</p><img src="${data.qr_url}" alt="QRIS">`;
+    } else {
+      resultDiv.innerHTML = `<p>Error: ${data.message}</p>`;
     }
-
-    // Redirect ke QRIS
-    window.location.href = data.payment_url;
-
   } catch (err) {
-    console.error("Donate error:", err);
-    alert("Fetch failed — API tidak bisa dijangkau.");
+    console.error(err);
+    resultDiv.innerHTML = "<p>Terjadi kesalahan.</p>";
   }
-}
+});
