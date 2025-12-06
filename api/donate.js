@@ -1,16 +1,27 @@
-
-
 export default async function handler(req, res) {
-    if (req.method !== "POST")
+    if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });
+    }
 
     try {
         const { name, amount } = req.body;
 
+        // Validasi input
         if (!name || !amount) {
-            return res.status(400).json({ error: "Nama dan nominal wajib diisi." });
+            return res.status(400).json({
+                success: false,
+                error: "Nama dan nominal wajib diisi."
+            });
         }
 
+        if (Number(amount) < 2000) {
+            return res.status(400).json({
+                success: false,
+                error: "Minimal donasi adalah 2000"
+            });
+        }
+
+        // Data API Pakasir
         const API_KEY = "xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM";
         const SLUG = "arthurxyz-studios";
 
@@ -21,6 +32,7 @@ export default async function handler(req, res) {
             description: `Donasi dari ${name}`
         };
 
+        // Request ke API Pakasir
         const response = await fetch("https://api.pakasir.com/payment/create", {
             method: "POST",
             headers: {
@@ -32,9 +44,15 @@ export default async function handler(req, res) {
 
         const result = await response.json();
 
-        if (!response.ok)
-            return res.status(500).json({ error: result?.message || "Gagal membuat pembayaran." });
+        // Kalau ada error dari Pakasir
+        if (!response.ok || !result?.data?.checkout_url) {
+            return res.status(500).json({
+                success: false,
+                error: result?.message || "Gagal membuat pembayaran."
+            });
+        }
 
+        // Sukses → kirim URL QRIS ke front-end
         return res.status(200).json({
             success: true,
             payment_url: result.data.checkout_url
@@ -42,6 +60,7 @@ export default async function handler(req, res) {
 
     } catch (err) {
         return res.status(500).json({
+            success: false,
             error: "Server error: " + err.message
         });
     }
