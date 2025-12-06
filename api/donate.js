@@ -4,23 +4,35 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { amount, name } = req.body;
+    let body = req.body;
+
+    // Antisipasi vercel bug: req.body kadang undefined di serverless
+    if (!body || typeof body !== "object") {
+      const raw = await new Promise((resolve) => {
+        let data = "";
+        req.on("data", (chunk) => (data += chunk));
+        req.on("end", () => resolve(data));
+      });
+
+      try {
+        body = JSON.parse(raw);
+      } catch (e) {
+        return res.status(400).json({ error: "Invalid JSON Body" });
+      }
+    }
+
+    const { amount, name } = body;
 
     if (!amount || !name) {
-      return res.status(400).json({ error: "Nama dan amount wajib diisi" });
+      return res.status(400).json({ error: "Name dan amount wajib diisi" });
     }
 
     const API_KEY = process.env.PAKASIR_API_KEY;
     const SLUG = process.env.PAKASIR_SLUG;
 
     if (!API_KEY || !SLUG) {
-      return res.status(500).json({ error: "API Key atau SLUG tidak ditemukan" });
+      return res.status(500).json({ error: "ENV belum diisi" });
     }
-
-    const payload = {
-      amount: Number(amount),
-      customer_name: name
-    };
 
     const apiRes = await fetch(`https://api.pakasir.com/api/${SLUG}/donate`, {
       method: "POST",
@@ -28,7 +40,10 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
         "x-api-key": API_KEY
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        amount: Number(amount),
+        customer_name: name
+      })
     });
 
     const data = await apiRes.json();
@@ -41,9 +56,8 @@ export default async function handler(req, res) {
       success: true,
       pay_url: data.pay_url
     });
-
   } catch (err) {
-    console.error("Donate API ERROR:", err);
-    return res.status(500).json({ error: "Server Error" });
+    console.error("DONATE ERROR:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
