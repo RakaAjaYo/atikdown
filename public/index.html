@@ -33,14 +33,45 @@
     <button onclick="previewVideo()">Preview</button>
   </div>
 
-  <div class="donate-box">
-  <h2>Dukung ATikdown ❤️</h2>
-  <p>Bantu biaya server & pengembangan fitur baru.</p>
+  <!-- DONATION CARD -->
+<section class="donate-box" aria-labelledby="donate-title">
+  <h2 id="donate-title">Dukung ATikdown</h2>
+  <p class="donate-desc">Bantu biaya server & pengembangan fitur. Minimal Rp 2.000.</p>
 
-  <input id="donateName" placeholder="Nama (optional)">
-  <input type="number" id="donateAmount" placeholder="Masukkan nominal">
-  <button onclick="payDonation()" class="donate-btn">Donasi</button>
-  </div>
+  <form id="donateForm" onsubmit="handleDonateForm(event)" novalidate>
+    <div class="donate-row">
+      <label for="donateAmount" class="visually-hidden">Nominal (IDR)</label>
+      <input
+        id="donateAmount"
+        name="amount"
+        type="number"
+        min="2000"
+        placeholder="Masukkan nominal (contoh: 5000)"
+        required
+        inputmode="numeric"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="donate-row">
+      <label for="donateName" class="visually-hidden">Nama (opsional)</label>
+      <input
+        id="donateName"
+        name="name"
+        type="text"
+        placeholder="Nama (opsional)"
+        maxlength="60"
+        autocomplete="name"
+      />
+    </div>
+
+    <div class="donate-actions">
+      <button type="submit" class="donate-btn">Donasi sekarang</button>
+    </div>
+
+    <p id="donateHelp" class="donate-help">Pembayaran lewat QRIS — kamu akan diarahkan setelah menekan tombol.</p>
+  </form>
+</section>
 
   <div id="result"></div>
 </div>
