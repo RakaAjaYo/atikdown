@@ -21,24 +21,34 @@ async function downloadFile(type, url) {
   window.location.href = `/api/download?type=${type}&url=${encodeURIComponent(url)}`;
 }
 
-async function donateNow() {
-  const name = document.getElementById("donateName").value;
+async function payDonation() {
   const amount = document.getElementById("donateAmount").value;
 
-  const res = await fetch("/api/donate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ name, amount })
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    alert(data.error);
+  if (!amount || amount < 2000) {
+    alert("Minimal donasi adalah 2000");
     return;
   }
 
-  window.location.href = data.pay_url;
-      }
+  try {
+    const res = await fetch("/api/donate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      console.error(data);
+      alert(data.error || "Gagal membuat pembayaran");
+      return;
+    }
+
+    // redirect ke QRIS pakasir
+    window.location.href = data.payment_url;
+
+  } catch (err) {
+    console.error("Donate error:", err);
+    alert("Server error.");
+  }
+}
