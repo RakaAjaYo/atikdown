@@ -33,20 +33,30 @@
   </div>
 
   <!-- DONASI -->
-  <div class="donate-box">
+  <!-- DONASI -->
+<div class="donate-box">
     <h2>Donasi ATikdown</h2>
-    <p>Bantu pengembangan server, fitur, dan hosting.</p>
+    <p class="donate-desc">Bantu pengembangan server, fitur, dan hosting.</p>
 
-    <label>Nominal Donasi (Minimal 2000)</label>
-    <input type="number" id="donateAmount" placeholder="Masukkan jumlah donasi">
-
-    <button onclick="payDonation()">Bayar Sekarang</button>
-
-    <div class="footer">
-      Pembayaran diproses dengan <b>Pakasir</b><br>
-      Aman • Cepat • QRIS Semua E-Wallet
+    <div class="donate-row">
+      <label class="visually-hidden">Nama</label>
+      <input type="text" id="donateName" placeholder="Nama Anda">
     </div>
-  </div>
+
+    <div class="donate-row">
+      <label class="visually-hidden">Nominal</label>
+      <input type="number" id="donateAmount" placeholder="Minimal 2000">
+    </div>
+
+    <div class="donate-actions">
+      <button class="donate-btn" onclick="payDonation()">Bayar Sekarang</button>
+    </div>
+
+    <div class="donate-help">
+      Pembayaran diproses dengan <b>Pakasir</b><br>
+      Aman • Cepat • QRIS Semua E-wallet
+    </div>
+</div>
 
   <div id="result"></div>
 </div>
