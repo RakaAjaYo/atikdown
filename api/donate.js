@@ -6,7 +6,6 @@ export default async function handler(req, res) {
     try {
         const { name, amount } = req.body;
 
-        // Validasi input
         if (!name || !amount) {
             return res.status(400).json({
                 success: false,
@@ -21,7 +20,6 @@ export default async function handler(req, res) {
             });
         }
 
-        // Data API Pakasir
         const API_KEY = "xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM";
         const SLUG = "arthurxyz-studios";
 
@@ -32,7 +30,6 @@ export default async function handler(req, res) {
             description: `Donasi dari ${name}`
         };
 
-        // Request ke API Pakasir
         const response = await fetch("https://api.pakasir.com/payment/create", {
             method: "POST",
             headers: {
@@ -44,7 +41,6 @@ export default async function handler(req, res) {
 
         const result = await response.json();
 
-        // Kalau ada error dari Pakasir
         if (!response.ok || !result?.data?.checkout_url) {
             return res.status(500).json({
                 success: false,
@@ -52,7 +48,6 @@ export default async function handler(req, res) {
             });
         }
 
-        // Sukses → kirim URL QRIS ke front-end
         return res.status(200).json({
             success: true,
             payment_url: result.data.checkout_url
