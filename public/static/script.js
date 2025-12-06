@@ -40,3 +40,30 @@ async function previewVideo() {
     resultContainer.innerHTML = `<p style="color:red;">Terjadi kesalahan, coba lagi nanti.</p>`;
   }
 }
+
+
+async function payDonation() {
+  const amount = document.getElementById("donateAmount").value;
+
+  if (!amount || amount < 2000) {
+    alert("Minimal donasi adalah 2000");
+    return;
+  }
+
+  // kirim request ke backend Vercel
+  const res = await fetch("/api/donate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert("Gagal membuat pembayaran");
+    return;
+  }
+
+  // Redirect ke halaman QRIS
+  window.location.href = data.payment_url;
+}
