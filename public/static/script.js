@@ -1,46 +1,95 @@
+// ===============================
+// PREVIEW VIDEO
+// ===============================
+
 async function previewVideo() {
   const url = document.getElementById("tiktokUrl").value.trim();
   if (!url) return alert("Masukkan link TikTok!");
 
   const resultContainer = document.getElementById("result");
-  resultContainer.innerHTML = "<p>Loading preview...</p>";
+  resultContainer.innerHTML = `<div class="loading">Loading preview...</div>`;
 
   try {
     const res = await fetch(`/api/preview?url=${encodeURIComponent(url)}`);
     const data = await res.json();
 
     if (!res.ok || data.error) {
-      resultContainer.innerHTML = `<p style="color:red;">${data.error || "Gagal mendapatkan preview"}</p>`;
+      resultContainer.innerHTML = `<p class="error">${data.error || "Gagal mendapatkan preview"}</p>`;
       return;
     }
 
     const videoUrl = data.video_hd || data.video;
-
     if (!videoUrl) {
-      resultContainer.innerHTML = `<p style="color:red;">Video tidak ditemukan</p>`;
+      resultContainer.innerHTML = `<p class="error">Video tidak ditemukan</p>`;
       return;
     }
 
     resultContainer.innerHTML = `
       <div class="preview-card">
-        <img src="${data.cover}" alt="Thumbnail" class="thumbnail">
-        <div class="video-info">
+        <img src="${data.cover}" class="preview-thumb">
+
+        <div class="info">
           <h3>${data.title}</h3>
-          <p>Author: ${data.author}</p>
-          <p>Date: ${data.date}</p>
+          <p>${data.author} • ${data.date}</p>
         </div>
-        <div class="download-buttons">
-          <a href="/api/download?url=${encodeURIComponent(videoUrl)}&type=video" class="download-btn">Download Video</a>
-          ${data.audio ? `<a href="/api/download?url=${encodeURIComponent(data.audio)}&type=audio" class="download-btn">Download Audio</a>` : ""}
+
+        <div class="btn-group">
+          <button onclick="downloadFile('${encodeURIComponent(videoUrl)}','video')" class="btn">Download Video</button>
+
+          ${
+            data.audio
+              ? `<button onclick="downloadFile('${encodeURIComponent(data.audio)}','audio')" class="btn">Download Audio</button>`
+              : ""
+          }
         </div>
       </div>
     `;
   } catch (err) {
-    console.error("Preview error:", err);
-    resultContainer.innerHTML = `<p style="color:red;">Terjadi kesalahan, coba lagi nanti.</p>`;
+    console.error(err);
+    resultContainer.innerHTML = `<p class="error">Terjadi kesalahan. Coba lagi.</p>`;
   }
 }
 
+
+
+// ===============================
+// DIRECT DOWNLOAD TANPA KE CDN
+// ===============================
+
+async function downloadFile(url, type) {
+  try {
+    const res = await fetch(`/api/download?url=${url}&type=${type}`);
+
+    if (!res.ok) {
+      alert("Gagal download file");
+      return;
+    }
+
+    // ambil binary dari api
+    const blob = await res.blob();
+
+    // bikin url local browser
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = `atikdown_file.${type === "video" ? "mp4" : "mp3"}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (err) {
+    console.error(err);
+    alert("Terjadi kesalahan saat download");
+  }
+}
+
+
+
+// ===============================
+// DONATE (QRIS PAKASIR)
+// ===============================
 
 async function payDonation() {
   const amount = document.getElementById("donateAmount").value;
@@ -50,11 +99,12 @@ async function payDonation() {
     return;
   }
 
-  // kirim request ke backend Vercel
   const res = await fetch("/api/donate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount })
+    body: JSON.stringify({
+      amount: Number(amount)
+    })
   });
 
   const data = await res.json();
@@ -64,6 +114,5 @@ async function payDonation() {
     return;
   }
 
-  // Redirect ke halaman QRIS
-  window.location.href = data.payment_url;
-}
+  window.location.href = data.payment_url; // redirect ke QRIS
+                                         }
