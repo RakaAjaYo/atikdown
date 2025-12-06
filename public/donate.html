@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donasi | AtikDown</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 420px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    input {
+      width: 90%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      width: 95%;
+      padding: 14px;
+      background: #ff0066;
+      color: #fff;
+      border: none;
+      font-size: 17px;
+      border-radius: 8px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    .ads {
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Donasi untuk AtikDown</h2>
+
+  <div class="box">
+    <input id="donateName" type="text" placeholder="Nama (wajib)">
+    <input id="donateAmount" type="number" placeholder="Nominal minimal 2000">
+
+    <button onclick="payDonation()">Donasi Sekarang</button>
+  </div>
+
+  <!-- ADS AREA (INI YANG KAMU MINTA BIAR TIDAK HILANG) -->
+  <div class="ads">
+    <script src="https://ads-network.app/ad-script.js"></script>
+  </div>
+
+  <script>
+    async function payDonation() {
+      const name = document.getElementById("donateName").value.trim();
+      const amount = document.getElementById("donateAmount").value.trim();
+
+      if (!name) return alert("Nama wajib diisi.");
+      if (!amount || amount < 2000) return alert("Minimal donasi 2000");
+
+      try {
+        const res = await fetch("/api/donate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, amount })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          alert(data.error || "Gagal membuat pembayaran");
+          return;
+        }
+
+        // SUCCESS → langsung redirect ke halaman QRIS Pakasir
+        window.location.href = data.payment_url;
+
+      } catch (err) {
+        console.error("Donate error:", err);
+        alert("Fetch failed — API tidak bisa dijangkau.");
+      }
+    }
+  </script>
+
+</body>
+  </html>
