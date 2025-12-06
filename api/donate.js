@@ -4,43 +4,47 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Vercel auto-parse JSON
     const { amount } = req.body;
 
-    if (!amount || amount < 2000) {
-      return res.status(400).json({ success: false, message: "Minimal donasi 2000" });
+    if (!amount || Number(amount) < 2000) {
+      return res.status(400).json({
+        success: false,
+        message: "Minimal donasi adalah 2000"
+      });
     }
 
-    const SLUG = "arthurxyz-studios";
-    const API_KEY = "xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM";
+    const merchant = "arthurxyz-studios";
+    const apikey = "xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM";
 
-    // Pakasir API REQUIRES apikey INSIDE BODY, not header
-    const response = await fetch("https://app.pakasir.com/api/payment", {
+    // Request ke Pakasir
+    const apiRes = await fetch("https://api.pakasir.com/payment/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        apikey: API_KEY,
-        slug: SLUG,
+        slug: merchant,
+        apikey: apikey,
         amount: amount,
-        note: "Donasi untuk ATikdown"
+        description: "Donasi ATikdown"
       })
     });
 
-    const result = await response.json();
+    const data = await apiRes.json();
 
-    if (!result.success) {
-      return res.status(500).json({
+    if (!data.success) {
+      return res.status(400).json({
         success: false,
-        message: result.message || "Gagal membuat pembayaran"
+        message: data.message || "Gagal membuat pembayaran"
       });
     }
 
     return res.status(200).json({
       success: true,
-      payment_url: result.payment_url
+      payment_url: data.payment_url
     });
 
-  } catch (err) {
-    console.error("Donate API Error:", err);
+  } catch (error) {
+    console.error("DONATE API ERROR:", error);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error"
