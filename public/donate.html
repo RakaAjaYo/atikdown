@@ -1,103 +1,20 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Donasi | AtikDown</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 420px;
-      margin: auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    input {
-      width: 90%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button {
-      width: 95%;
-      padding: 14px;
-      background: #ff0066;
-      color: #fff;
-      border: none;
-      font-size: 17px;
-      border-radius: 8px;
-      margin-top: 15px;
-      cursor: pointer;
-    }
-
-    .ads {
-      margin-top: 25px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donasi</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <h1>Donasi untuk ArthurXYZ Studios</h1>
+  <form id="donateForm">
+    <input type="text" id="donorName" placeholder="Nama" required />
+    <input type="number" id="amount" placeholder="Nominal (Rp)" required />
+    <button type="submit">Bayar via QRIS</button>
+  </form>
+  <div id="result"></div>
 
-  <h2>Donasi untuk AtikDown</h2>
-
-  <div class="box">
-    <input id="donateName" type="text" placeholder="Nama (wajib)">
-    <input id="donateAmount" type="number" placeholder="Nominal minimal 2000">
-
-    <button onclick="payDonation()">Donasi Sekarang</button>
-  </div>
-
-  <!-- ADS AREA (INI YANG KAMU MINTA BIAR TIDAK HILANG) -->
-  <div class="ads">
-    <script async data-cfasync="false" src="//pl28178951.effectivegatecpm.com/b25a1addf81c0bd040177669b38f04c2/invoke.js"></script>
-  <div id="container-bottom-b25a1addf81c0bd040177669b38f04c2"></div>
-  </div>
-
-  <script>
-    async function payDonation() {
-      const name = document.getElementById("donateName").value.trim();
-      const amount = document.getElementById("donateAmount").value.trim();
-
-      if (!name) return alert("Nama wajib diisi.");
-      if (!amount || amount < 2000) return alert("Minimal donasi 2000");
-
-      try {
-        const res = await fetch("/api/donate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, amount })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok || !data.success) {
-          alert(data.error || "Gagal membuat pembayaran");
-          return;
-        }
-
-        // SUCCESS → langsung redirect ke halaman QRIS Pakasir
-        window.location.href = data.payment_url;
-
-      } catch (err) {
-        console.error("Donate error:", err);
-        alert("Fetch failed — API tidak bisa dijangkau.");
-      }
-    }
-  </script>
-
+<script src="script.js"></script>
 </body>
-  </html>
+</html>
