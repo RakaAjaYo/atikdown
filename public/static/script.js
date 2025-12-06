@@ -46,7 +46,7 @@ form.addEventListener("submit", async (e) => {
   resultDiv.innerHTML = "Membuat QRIS...";
 
   try {
-    const res = await fetch("/api/donate", {
+    const res = await fetch("/api/createPayment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ donorName, amount })
