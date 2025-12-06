@@ -1,65 +1,44 @@
+import fetch from "node-fetch";
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    let body = req.body;
-
-    // Antisipasi vercel bug: req.body kadang undefined di serverless
-    if (!body || typeof body !== "object") {
-      const raw = await new Promise((resolve) => {
-        let data = "";
-        req.on("data", (chunk) => (data += chunk));
-        req.on("end", () => resolve(data));
-      });
-
-      try {
-        body = JSON.parse(raw);
-      } catch (e) {
-        return res.status(400).json({ error: "Invalid JSON Body" });
-      }
-    }
-
-    const { amount, name } = body;
+    const { amount } = req.body;
 
     if (!amount) {
-  return res.status(400).json({ error: "Amount wajib diisi" });
-}
-
-const donorName = name ? name : "Anonymous";
-
-    const API_KEY = process.env.PAKASIR_API_KEY;
-    const SLUG = process.env.PAKASIR_SLUG;
-
-    if (!API_KEY || !SLUG) {
-      return res.status(500).json({ error: "ENV belum diisi" });
+      return res.status(400).json({ error: "Amount wajib diisi" });
     }
 
-    const apiRes = await fetch(`https://api.pakasir.com/api/${SLUG}/donate`, {
+    const paymentData = {
+      apikey: "xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM",
+      slug: "arthurxyz-studios",
+      amount: Number(amount),
+      customer_name: "Anonymous",
+      description: "Donasi ATikdown",
+    };
+
+    const reqPakasir = await fetch("https://app.pakasir.com/api/create-qris", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY
-      },
-      body: JSON.stringify({
-        amount: Number(amount),
-        customer_name: donorName
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(paymentData),
     });
 
-    const data = await apiRes.json();
+    const result = await reqPakasir.json();
 
-    if (!apiRes.ok) {
-      return res.status(400).json({ error: data.error || "Gagal membuat donasi" });
+    if (!result.success) {
+      return res.status(500).json({ error: "Gagal membuat QRIS" });
     }
 
     return res.status(200).json({
       success: true,
-      pay_url: data.pay_url
+      payment_url: result.payment_url
     });
+
   } catch (err) {
-    console.error("DONATE ERROR:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error("Donate API error:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 }
