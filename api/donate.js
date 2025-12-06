@@ -1,53 +1,49 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ success: false, message: "Method Not Allowed" });
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 
   try {
-    // Vercel auto-parse JSON
-    const { amount } = req.body;
+    const { amount, name } = req.body;
 
-    if (!amount || Number(amount) < 2000) {
-      return res.status(400).json({
-        success: false,
-        message: "Minimal donasi adalah 2000"
-      });
+    if (!amount || !name) {
+      return res.status(400).json({ error: "Nama dan amount wajib diisi" });
     }
 
-    const merchant = "arthurxyz-studios";
-    const apikey = "xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM";
+    const API_KEY = process.env.PAKASIR_API_KEY;
+    const SLUG = process.env.PAKASIR_SLUG;
 
-    // Request ke Pakasir
-    const apiRes = await fetch("https://api.pakasir.com/payment/create", {
+    if (!API_KEY || !SLUG) {
+      return res.status(500).json({ error: "API Key atau SLUG tidak ditemukan" });
+    }
+
+    const payload = {
+      amount: Number(amount),
+      customer_name: name
+    };
+
+    const apiRes = await fetch(`https://api.pakasir.com/api/${SLUG}/donate`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        slug: merchant,
-        apikey: apikey,
-        amount: amount,
-        description: "Donasi ATikdown"
-      })
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY
+      },
+      body: JSON.stringify(payload)
     });
 
     const data = await apiRes.json();
 
-    if (!data.success) {
-      return res.status(400).json({
-        success: false,
-        message: data.message || "Gagal membuat pembayaran"
-      });
+    if (!apiRes.ok) {
+      return res.status(400).json({ error: data.error || "Gagal membuat donasi" });
     }
 
     return res.status(200).json({
       success: true,
-      payment_url: data.payment_url
+      pay_url: data.pay_url
     });
 
-  } catch (error) {
-    console.error("DONATE API ERROR:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error"
-    });
+  } catch (err) {
+    console.error("Donate API ERROR:", err);
+    return res.status(500).json({ error: "Server Error" });
   }
 }
