@@ -1,66 +1,34 @@
 import fetch from "node-fetch";
 
 export default async function handler(req, res) {
-    if (req.method !== "POST") {
-        return res.status(405).json({ error: "Method not allowed" });
-    }
+  if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
 
-    try {
-        const { name, amount } = req.body;
+  const { amount, donorName } = req.body;
 
-        if (!name || !amount) {
-            return res.status(400).json({
-                success: false,
-                error: "Nama dan nominal wajib diisi."
-            });
-        }
+  if (!amount || !donorName) {
+    return res.status(400).json({ message: "Amount and donorName required" });
+  }
 
-        if (Number(amount) < 2000) {
-            return res.status(400).json({
-                success: false,
-                error: "Minimal donasi adalah 2000"
-            });
-        }
+  try {
+    const response = await fetch("https://app.pakasir.com/api/v2/qr_payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM" // API Key
+      },
+      body: JSON.stringify({
+        slug: "arthurxyz-studios",
+        amount,
+        description: `Donasi dari ${donorName}`
+      })
+    });
 
-        const API_KEY = "xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM";
-        const SLUG = "arthurxyz-studios";
+    const data = await response.json();
+    if (!response.ok) return res.status(response.status).json(data);
 
-        const payload = {
-            slug: SLUG,
-            amount: Number(amount),
-            customer_name: name,
-            description: `Donasi dari ${name}`
-        };
-
-        // REQUEST KE API PAKASIR
-        const response = await fetch("https://api.pakasir.com/payment/create", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "api-key": API_KEY
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (!response.ok || !result?.data?.checkout_url) {
-            return res.status(500).json({
-                success: false,
-                error: result?.message || "Gagal membuat pembayaran."
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            payment_url: result.data.checkout_url
-        });
-
-    } catch (err) {
-        console.error("Donate API error:", err);
-        return res.status(500).json({
-            success: false,
-            error: "Server error: " + err.message
-        });
-    }
-            }
+    res.status(200).json(data); // Mengirimkan info QRIS atau URL pembayaran
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
