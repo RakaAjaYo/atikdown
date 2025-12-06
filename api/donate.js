@@ -44,7 +44,7 @@ const donorName = name ? name : "Anonymous";
       },
       body: JSON.stringify({
         amount: Number(amount),
-        customer_name: name
+        customer_name: donorName
       })
     });
 
