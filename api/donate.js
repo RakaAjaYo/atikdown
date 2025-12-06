@@ -23,9 +23,11 @@ export default async function handler(req, res) {
 
     const { amount, name } = body;
 
-    if (!amount || !name) {
-      return res.status(400).json({ error: "Name dan amount wajib diisi" });
-    }
+    if (!amount) {
+  return res.status(400).json({ error: "Amount wajib diisi" });
+}
+
+const donorName = name ? name : "Anonymous";
 
     const API_KEY = process.env.PAKASIR_API_KEY;
     const SLUG = process.env.PAKASIR_SLUG;
