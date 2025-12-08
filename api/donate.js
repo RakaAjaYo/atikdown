@@ -1,58 +1,51 @@
-// api/donate.js
-import fetch from "node-fetch";
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ success: false, error: "Method not allowed" });
   }
 
   try {
-    const { amount } = req.body;
+    const { name, amount } = req.body;
 
-    if (!amount) {
-      return res.status(400).json({ error: "Amount is required" });
-    }
+    const API_KEY = "xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM";
+    const SLUG = "arthurxyz-studios";
 
-    // Wajib sesuai dokumen
-    const apiKey = process.env.PAKASIR_API_KEY;   // simpan di Vercel env
-    const project = process.env.PAKASIR_SLUG;     // slug proyek kamu
-    const orderId = "DONATE_" + Date.now();       // ID unik
+    const payload = {
+      slug: SLUG,
+      amount: Number(amount),
+      customer_name: name,
+      payment_method: "qris",     // ⬅ WAJIB BIAR QRIS MUNCUL
+      description: `Donasi dari ${name}`,
+      expired_time: 10            // boleh ada, boleh tidak
+    };
 
-    const response = await fetch(
-      "https://app.pakasir.com/api/transactioncreate/qris",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          project: project,
-          order_id: orderId,
-          amount: parseInt(amount),
-          api_key: apiKey,
-        }),
-      }
-    );
+    const response = await fetch("https://api.pakasir.com/payment/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": API_KEY,
+      },
+      body: JSON.stringify(payload),
+    });
 
-    const data = await response.json();
+    const result = await response.json();
 
-    // Jika gagal
-    if (!response.ok) {
-      return res.status(500).json({
-        error: "Failed to create transaction",
-        detail: data,
+    console.log("RAW RESULT:", result);
+
+    // Jika Pakasir gagal membuat QRIS
+    if (!result.data || !result.data.checkout_url) {
+      return res.status(400).json({
+        success: false,
+        error: result.message || "Gagal membuat QRIS"
       });
     }
 
-    // sesuai dokumen → data.payment.payment_number (QR)
     return res.status(200).json({
       success: true,
-      order_id: orderId,
-      payment: data.payment,
-      raw: data,
+      payment_url: result.data.checkout_url
     });
-  } catch (error) {
-    return res.status(500).json({
-      error: "Internal server error",
-      detail: error.message,
-    });
+
+  } catch (err) {
+    console.error("DONATE ERROR:", err);
+    return res.status(500).json({ success: false, error: err.message });
   }
 }
