@@ -39,8 +39,8 @@ async function payDonation() {
   const name = document.getElementById("donateName").value.trim();
   const amount = document.getElementById("donateAmount").value.trim();
 
-  if (!name) return alert("Nama wajib diisi.");
-  if (!amount || amount < 2000) return alert("Minimal donasi 2000");
+  if (!name) return alert("Nama wajib diisi");
+  if (!amount || amount < 2000) return alert("Minimal 2000");
 
   try {
     const res = await fetch("/api/donate", {
@@ -51,14 +51,17 @@ async function payDonation() {
 
     const data = await res.json();
 
-    if (!res.ok || !data.success) {
-      alert(data.error || "Gagal membuat pembayaran");
+    if (!data.success) {
+      alert(data.error || "Gagal membuat QR");
       return;
     }
 
-    window.location.href = data.payment_url; // redirect ke QRIS Pakasir
+    // tampilkan QR
+    const qrImg = document.getElementById("qrImage");
+    qrImg.src = data.qr_image;
+    qrImg.style.display = "block";
+
   } catch (err) {
-    alert("Fetch failed — kemungkinan API tidak dijangkau.");
-    console.error(err);
+    alert("Fetch failed — API tidak bisa dijangkau.");
   }
 }
