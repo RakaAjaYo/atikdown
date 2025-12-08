@@ -35,28 +35,30 @@ async function previewVideo() {
   }
 }
 
-async function donate() {
-  const amount = document.getElementById("amount").value;
+async function payDonation() {
+  const name = document.getElementById("donateName").value.trim();
+  const amount = document.getElementById("donateAmount").value.trim();
 
-  const res = await fetch("/api/donate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount }),
-  });
+  if (!name) return alert("Nama wajib diisi.");
+  if (!amount || amount < 2000) return alert("Minimal donasi 2000");
 
-  const data = await res.json();
+  try {
+    const res = await fetch("/api/donate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, amount })
+    });
 
-  if (!data.success) {
-    alert("Gagal membuat pembayaran");
-    console.log(data);
-    return;
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      alert(data.error || "Gagal membuat pembayaran");
+      return;
+    }
+
+    window.location.href = data.payment_url; // redirect ke QRIS Pakasir
+  } catch (err) {
+    alert("Fetch failed — kemungkinan API tidak dijangkau.");
+    console.error(err);
   }
-
-  // QRIS Payment Number (untuk ditampilkan jadi QR Code)
-  const qrNumber = data.payment.payment_number;
-
-  document.getElementById("result").innerHTML = `
-    <p>Order ID: ${data.order_id}</p>
-    <p>QRIS Number: ${qrNumber}</p>
-  `;
 }
