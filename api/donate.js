@@ -2,52 +2,38 @@ import fetch from "node-fetch";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ success: false, error: "Method not allowed" });
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 
   try {
-    const { name, amount } = req.body;
+    const { amount } = req.body;
 
-    const API_KEY = "xmCaAM7PILQ1qU3nQ2q3T58r7m8UXOCM";
-    const SLUG = "arthurxyz-studios";
-
-    const payload = {
-      slug: SLUG,
-      amount: Number(amount),
-      customer_name: name,
-      payment_method: "qris",     // ⬅ WAJIB BIAR QRIS MUNCUL
-      description: `Donasi dari ${name}`,
-      expired_time: 10            // boleh ada, boleh tidak
-    };
-
-    const response = await fetch("https://app.pakasir.com/payment/create", {
+    const apiRes = await fetch("https://app.pakasir.com/api/transactioncreate/qris", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "api-key": API_KEY,
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        apikey: process.env.PAKASIR_KEY,
+        amount: amount,
+        note: "Donation from ATikdown"
+      })
     });
 
-    const result = await response.json();
+    const text = await apiRes.text();
 
-    console.log("RAW RESULT:", result);
-
-    // Jika Pakasir gagal membuat QRIS
-    if (!result.data || !result.data.checkout_url) {
-      return res.status(400).json({
-        success: false,
-        error: result.message || "Gagal membuat QRIS"
-      });
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      console.log("RAW RESPONSE:", text);
+      return res.status(500).json({ error: "API mengembalikan HTML / bukan JSON" });
     }
 
-    return res.status(200).json({
-      success: true,
-      payment_url: result.data.checkout_url
-    });
+    return res.status(200).json(data);
 
   } catch (err) {
     console.error("DONATE ERROR:", err);
-    return res.status(500).json({ success: false, error: err.message });
+    return res.status(500).json({ error: "Server error" });
   }
-}
+  }
