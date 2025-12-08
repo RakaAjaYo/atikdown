@@ -35,32 +35,28 @@ async function previewVideo() {
   }
 }
 
-const form = document.getElementById("donateForm");
-const resultDiv = document.getElementById("result");
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const donorName = document.getElementById("donorName").value;
+async function donate() {
   const amount = document.getElementById("amount").value;
 
-  resultDiv.innerHTML = "Membuat QRIS...";
+  const res = await fetch("/api/donate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount }),
+  });
 
-  try {
-    const res = await fetch("/api/donate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ donorName, amount })
-    });
+  const data = await res.json();
 
-    const data = await res.json();
-
-    if (res.ok) {
-      resultDiv.innerHTML = `<p>Scan QR berikut untuk bayar:</p><img src="${data.qr_url}" alt="QRIS">`;
-    } else {
-      resultDiv.innerHTML = `<p>Error: ${data.message}</p>`;
-    }
-  } catch (err) {
-    console.error(err);
-    resultDiv.innerHTML = "<p>Terjadi kesalahan.</p>";
+  if (!data.success) {
+    alert("Gagal membuat pembayaran");
+    console.log(data);
+    return;
   }
-});
+
+  // QRIS Payment Number (untuk ditampilkan jadi QR Code)
+  const qrNumber = data.payment.payment_number;
+
+  document.getElementById("result").innerHTML = `
+    <p>Order ID: ${data.order_id}</p>
+    <p>QRIS Number: ${qrNumber}</p>
+  `;
+}
