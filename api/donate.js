@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       expired_time: 10            // boleh ada, boleh tidak
     };
 
-    const response = await fetch("https://api.pakasir.com/payment/create", {
+    const response = await fetch("https://app.pakasir.com/payment/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
