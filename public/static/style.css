@@ -1,191 +1,235 @@
-/* Reset dan dasar */
+/* --- Variables & Theme --- */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --primary-gradient: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
+  --text-white: #ffffff;
+  --text-glass: rgba(255, 255, 255, 0.9);
+}
+
+/* --- Reset & Base --- */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f8f8f8;
-  color: #333;
+  /* Animated Deep Ocean/Space Gradient */
+  background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #004e92);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color: var(--text-white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 
-/* Container utama */
+/* --- Background Animation --- */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Layout Container --- */
 .container {
+  width: 100%;
   max-width: 480px;
-  margin: 20px auto 40px auto;
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  margin: 0 auto;
+  padding: 30px 20px;
+  flex: 1;
+  z-index: 2;
 }
 
-/* Judul & subtitle */
+/* --- Glass Typography --- */
 .title {
   text-align: center;
-  font-size: 28px;
-  margin-bottom: 4px;
+  font-size: 38px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 5px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  letter-spacing: -0.5px;
+  animation: floatUp 0.8s ease-out;
 }
 
 .subtitle {
   text-align: center;
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 20px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 40px;
+  font-weight: 400;
+  animation: floatUp 0.8s ease-out 0.2s backwards;
 }
 
-/* Input group */
+/* --- Glass Input Group --- */
 .input-group {
+  position: relative;
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+  animation: floatUp 0.8s ease-out 0.4s backwards;
 }
 
 .input-group input {
-  flex: 1;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
+  width: 100%;
+  padding: 18px 22px;
+  
+  /* GLASS EFFECT INPUT */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  
+  color: #fff;
+  font-size: 16px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.input-group input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 .input-group button {
-  padding: 10px 16px;
-  background: #ff0050;
+  width: 100%;
+  padding: 18px;
+  /* Glowing Gradient Button */
+  background: var(--primary-gradient);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  box-shadow: 0 4px 15px rgba(0, 200, 255, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.input-group button:hover {
-  background: #e60044;
+.input-group button:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 8px rgba(0, 200, 255, 0.2);
 }
 
-/* Preview card */
-#result .preview-card {
+/* --- Glass Preview Card --- */
+.preview-card {
+  /* GLASS CARD */
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: #f1f1f1;
-  padding: 12px;
-  border-radius: 10px;
+  gap: 15px;
+  animation: floatUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .preview-card img.thumbnail {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 
-.preview-card .video-info h3 {
-  margin: 0;
+.video-info h3 {
   font-size: 16px;
-  color: #333;
-}
-
-.preview-card .video-info p {
-  margin: 2px 0;
-  color: #555;
-  font-size: 14px;
-}
-
-/* Download buttons */
-.download-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.download-buttons .download-btn {
-  flex: 1;
-  text-align: center;
-  background: #ff0050;
+  font-weight: 600;
   color: #fff;
-  padding: 8px 0;
-  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+.video-info p {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* --- Glass Buttons --- */
+.download-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  border-radius: 16px;
   text-decoration: none;
-  font-weight: bold;
-  transition: background 0.2s;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s;
+  
+  /* Glass Button Style */
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
-.download-buttons .download-btn:hover {
-  background: #e60044;
+.download-btn:active {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Ads */
+.download-btn.primary {
+  background: #fff;
+  color: #333; /* Dark text on white button for contrast */
+  grid-column: span 2;
+  box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+  font-weight: 800;
+}
+
+.download-btn.primary:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* --- Ads Area (Glassy) --- */
 .ad-banner {
   display: flex;
   justify-content: center;
-  margin: 10px 0;
-}
-
-
-/* Donasi card */
-.donate-box {
-  margin-top: 20px;
-  background: #fff;
-  padding: 16px;
+  align-items: center;
+  margin: 20px 0;
   border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  text-align: left;
-}
-
-.donate-box h2 {
-  margin: 0 0 6px 0;
-  font-size: 18px;
-  color: #111;
-}
-
-.donate-desc {
-  margin: 0 0 12px 0;
-  color: #666;
-  font-size: 13px;
-}
-
-.donate-row {
-  margin-bottom: 10px;
-}
-
-.donate-row input[type="number"],
-.donate-row input[type="text"] {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #e6e6e6;
-  border-radius: 10px;
-  font-size: 14px;
-}
-
-.donate-actions {
-  margin-top: 8px;
-}
-
-.donate-btn {
-  width: 100%;
-  padding: 12px;
-  background: #ff0050;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.donate-btn:hover { background: #e60044; }
-
-.donate-help {
-  margin-top: 10px;
-  font-size: 12px;
-  color: #888;
-}
-
-/* Utility: visually hidden for accessible labels */
-.visually-hidden {
-  position: absolute !important;
-  height: 1px; width: 1px;
   overflow: hidden;
-  clip: rect(1px, 1px, 1px, 1px);
-  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.2); /* Gelap sedikit agar iklan pop */
+  padding: 10px;
+  backdrop-filter: blur(5px);
+}
+
+/* --- Responsive --- */
+@media (min-width: 481px) {
+  .input-group {
+    flex-direction: row;
+  }
+  .input-group button {
+    width: auto;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
 }
